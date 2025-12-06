@@ -86,9 +86,39 @@ const getOneVehicles = async (req: Request, res: Response) => {
     });
   }
 };
+// delete one vehicle
+const deleteOneVehicles = async (req: Request, res: Response) => {
+  const vehicleId = Number(req.params.vehicleId);
+
+  if (isNaN(vehicleId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid vehicle ID" });
+  }
+  try {
+    const vehicle = await vehiclesServices.deleteOneVehicle(vehicleId);
+    if (vehicle.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle not found!",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Vehicle deleted successful!",
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error?.message,
+      details: error,
+    });
+  }
+};
 
 export const vehiclesController = {
   createVehicles,
   getAllVehicles,
   getOneVehicles,
+  deleteOneVehicles,
 };
