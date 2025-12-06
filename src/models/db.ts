@@ -6,6 +6,7 @@ dotenv.config();
 export const pool = new Pool({
   connectionString: `${process.env.CONNECTION_STR}`,
 });
+
 export const initDB = async () => {
   await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
