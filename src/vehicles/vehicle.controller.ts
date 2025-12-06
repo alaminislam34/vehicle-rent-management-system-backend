@@ -86,6 +86,7 @@ const getOneVehicles = async (req: Request, res: Response) => {
     });
   }
 };
+
 // delete one vehicle
 const deleteOneVehicles = async (req: Request, res: Response) => {
   const vehicleId = Number(req.params.vehicleId);
@@ -115,10 +116,54 @@ const deleteOneVehicles = async (req: Request, res: Response) => {
     });
   }
 };
+// delete one vehicle
+const updateOneVehicles = async (req: Request, res: Response) => {
+  const vehicleId = Number(req.params.vehicleId);
+  const { daily_rent_price, availability_status } = req.body;
+
+  if (isNaN(vehicleId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid vehicle ID" });
+  }
+  if(!["available", "booked"].includes(availability_status)){
+    return res.status(400).json({
+        success:true, 
+        message: "Invalid availability status!"
+    })
+  }
+  try {
+    const vehicles = await vehiclesServices.updateOneVehicle(
+      vehicleId,
+      daily_rent_price,
+      availability_status
+    );
+
+    if (vehicles.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle not found!",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Vehicle updated successful!",
+      data: vehicles.rows[0],
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error?.message,
+      details: error,
+    });
+  }
+};
 
 export const vehiclesController = {
   createVehicles,
   getAllVehicles,
   getOneVehicles,
   deleteOneVehicles,
+  updateOneVehicles,
 };

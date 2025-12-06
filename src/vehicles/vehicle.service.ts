@@ -70,9 +70,29 @@ const deleteOneVehicle = async (vehicleId: number) => {
   return result;
 };
 
+// update one vehicle
+const updateOneVehicle = async (
+  vehicleId: number,
+  daily_rent_price: number,
+  availability_status: string
+) => {
+  const result = await pool.query(
+    ` 
+    UPDATE vehicles 
+    SET daily_rent_price = $2, availability_status = $3 
+    WHERE id = $1 
+    RETURNING *
+    `,
+    [vehicleId, daily_rent_price, availability_status]
+  );
+
+  return result;
+};
+
 export const vehiclesServices = {
   createVehicles,
   getAllVehicles,
   getOneVehicle,
   deleteOneVehicle,
+  updateOneVehicle,
 };
