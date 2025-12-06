@@ -36,12 +36,12 @@ const loginUser = async (email: string, password: string) => {
 
   const user = result.rows[0];
   if (!user) {
-    return null;
+    throw new Error("User not found");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return null;
+    throw new Error("Incorrect password");
   }
 
   const accessToken = jwt.sign(
