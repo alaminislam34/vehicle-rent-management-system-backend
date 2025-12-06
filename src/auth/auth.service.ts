@@ -27,25 +27,39 @@ const loginUser = async (email: string, password: string) => {
     `
     SELECT * FROM users WHERE email = $1
     `,
-    [email]
+    [email.toLowerCase()]
   );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
   const user = result.rows[0];
   if (!user) {
     return null;
   }
+
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return null;
   }
-  const token = jwt.sign(
+
+  const accessToken = jwt.sign(
     { id: user.id, name: user.name, role: user.role },
-    process.env.JWT_SECRET!,
-    { expiresIn: "3d" }
+    process.env.ACCESS_TOKEN_SECRET!,
+    { expiresIn: "5m" }
   );
 
-  return { token, user };
+  const refreshToken = jwt.sign(
+    { id: user.id, name: user.name, role: user.role },
+    process.env.REFRESH_TOKEN_SECRET!,
+    { expiresIn: "5m" }
+  );
+
+  return { accessToken, refreshToken, user };
 };
 
 export const authServices = {
   createUser,
+  loginUser,
 };
