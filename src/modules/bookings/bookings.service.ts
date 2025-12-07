@@ -97,6 +97,24 @@ const createBooking = async (req: Request) => {
   if (req.user?.role === "admin" && customer_id === req.user?.id) {
     throw new Error("You cannot create a booking for yourself as an admin");
   }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const start = new Date(rent_start_date);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(rent_end_date);
+  end.setHours(0, 0, 0, 0);
+
+  if (start < today) {
+    throw new Error("Rent start date cannot be before today.");
+  }
+
+  if (end < start) {
+    throw new Error("Rent end date cannot be before start date.");
+  }
+
   const vehicleResult = await pool.query(
     "SELECT * FROM vehicles WHERE id = $1",
     [vehicle_id]
@@ -115,8 +133,6 @@ const createBooking = async (req: Request) => {
   if (vehicle.availability_status !== "available")
     throw new Error("Vehicle is already booked!");
 
-  const start = new Date(rent_start_date);
-  const end = new Date(rent_end_date);
   const days = Math.ceil(
     (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
   );
