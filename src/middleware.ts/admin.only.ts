@@ -46,7 +46,7 @@ export const adminRoute = async (
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Invalid token!",
     });
   }
 };
