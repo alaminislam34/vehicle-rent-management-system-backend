@@ -3,8 +3,7 @@
 A complete backend system for managing vehicles, users, and bookings.
 Includes authentication, role-based authorization (Admin / Customer), secure booking handling, and vehicle availability tracking.
 
-> **Live URL:** _([Add your deployed link here — e.g., Render, Railway, Vercel, etc.](https://vehicle-manage-system.vercel.app/))_
-> Example: `https://vehicle-manage-system.vercel.app/`
+> **Live URL:** _(`https://vehicle-manage-system.vercel.app/`)_
 
 ---
 
