@@ -63,13 +63,12 @@ Includes authentication, role-based authorization (Admin / Customer), secure boo
 
 ```
 src/
- ├── controllers/
+ ├── config/
  ├── middleware/
  ├── models/
- ├── routes/
- ├── utils/
+ ├── modules/
+ ├── types/
  ├── server.ts
- └── config/
 ```
 
 ---
@@ -79,8 +78,8 @@ src/
 ### 1️⃣ Clone the Repository
 
 ```sh
-git clone https://github.com/your-username/vehicle-management-system.git
-cd vehicle-management-system
+git clone https://github.com/alaminislam34/vehicle-rent-management-system-backend.git
+cd vehicle-rent-management-system-backend
 ```
 
 ### 2️⃣ Install Dependencies
@@ -94,9 +93,11 @@ npm install
 Add environment variables such as:
 
 ```
+NODE_ENV=development
 PORT=5000
-DATABASE_URL=postgres://user:password@localhost:5432/dbname
-JWT_SECRET=your_jwt_secret_key
+CONNECTION_STR=postgres://user:password@localhost:5432/dbname
+ACCESS_TOKEN_SECRET=your_access_secret_key
+REFRESH_TOKEN_SECRET=your_refresh_secret_key
 ```
 
 ### 4️⃣ Start Development Server

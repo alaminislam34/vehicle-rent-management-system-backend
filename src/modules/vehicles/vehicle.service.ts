@@ -1,4 +1,5 @@
-import { pool } from "../models/db";
+import { pool } from "../../models/db";
+
 
 export interface CreateVehicleBody {
   vehicle_name: string;

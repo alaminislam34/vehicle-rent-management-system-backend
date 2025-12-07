@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { pool } from "../models/db";
+import { pool } from "../../models/db";
 import { authServices } from "./auth.service";
 
 const createuser = async (req: Request, res: Response) => {

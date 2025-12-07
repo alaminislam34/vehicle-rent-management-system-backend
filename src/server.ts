@@ -1,12 +1,12 @@
 import express, { Request, Response } from "express";
-import { authRoutes } from "./auth/auth.routes";
+import { authRoutes } from "./modules/auth/auth.routes";
 import config from "./config";
 import { initDB } from "./models/db";
 import dotenv from "dotenv";
-import { vehiclesRoutes } from "./vehicles/vehicle.routes";
-import { usersRoutes } from "./users/users.routes";
-import { bookinsRoutes } from "./bookings/bookings.routes";
+import { usersRoutes } from "./modules/users/users.routes";
+import { bookinsRoutes } from "./modules/bookings/bookings.routes";
 import cors from "cors";
+import { vehiclesRoutes } from "./modules/vehicles/vehicle.routes";
 
 const app = express();
 dotenv.config();

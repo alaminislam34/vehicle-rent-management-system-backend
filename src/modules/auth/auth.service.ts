@@ -1,4 +1,4 @@
-import { pool } from "../models/db";
+import { pool } from "../../models/db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 

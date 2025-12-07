@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { pool } from "../models/db";
+import { pool } from "../../models/db";
 
 const getAllBookings = async (req: Request) => {
   if (req.user?.role === "admin") {

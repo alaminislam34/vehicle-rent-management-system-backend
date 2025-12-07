@@ -1,6 +1,6 @@
 import express from "express";
 import { vehiclesController } from "./vehicle.controller";
-import { adminRoute } from "../middleware.ts/admin.only";
+import { adminRoute } from "../../middleware.ts/admin.only";
 
 const router = express.Router();
 

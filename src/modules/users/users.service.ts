@@ -1,4 +1,4 @@
-import { pool } from "../models/db";
+import { pool } from "../../models/db";
 
 // get all users
 const getAllUsers = async () => {
