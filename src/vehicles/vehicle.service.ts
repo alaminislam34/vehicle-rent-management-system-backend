@@ -16,6 +16,10 @@ const createVehicles = async ({
   daily_rent_price,
   availability_status,
 }: CreateVehicleBody) => {
+  if (availability_status !== "available") {
+    throw new Error("Availability status must be available");
+  }
+  
   const result = await pool.query(
     `
     INSERT INTO 
@@ -62,8 +66,11 @@ const getOneVehicle = async (vehicleId: number) => {
 const deleteOneVehicle = async (vehicleId: number) => {
   const result = await pool.query(
     ` 
-        DELETE FROM vehicles WHERE id = $1 RETURNING *
-        `,
+    DELETE 
+    FROM vehicles 
+    WHERE id = $1 
+    RETURNING *
+    `,
     [vehicleId]
   );
 

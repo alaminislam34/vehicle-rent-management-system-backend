@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export const adminRoute = async (
+export const adminOrOwn = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -12,13 +12,12 @@ export const adminRoute = async (
   }
 
   const token = authHeaders.split(" ")[1];
-
   if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Access denied. Token missing!",
-    });
+    return res
+      .status(401)
+      .json({ success: false, message: "Access denied. Token missing!" });
   }
+
   try {
     const decoded = jwt.verify(
       token,
@@ -26,27 +25,36 @@ export const adminRoute = async (
     ) as JwtPayload;
 
     if (
+      !decoded ||
       typeof decoded !== "object" ||
-      decoded === null ||
-      !("role" in decoded)
+      !("role" in decoded) ||
+      !("id" in decoded)
     ) {
       return res
         .status(401)
         .json({ success: false, message: "Invalid token payload" });
     }
 
-    if (decoded.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Access forbidden!",
-      });
-    }
+    req.user = {
+      id: decoded.id as number,
+      role: decoded.role as string,
+      name: (decoded.name as string) || "",
+    };
 
-    return next();
-  } catch (error: any) {
-    return res.status(500).json({
+    const userIdParam = req.params.userId ? Number(req.params.userId) : null;
+
+    if (req.user.role === "admin") return next();
+
+    if (userIdParam && req.user.id === userIdParam) return next();
+
+    return res.status(403).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Access forbidden!",
+    });
+  } catch (error: any) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token!",
     });
   }
 };

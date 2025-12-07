@@ -44,7 +44,7 @@ const createuser = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: "User created successful!",
+      message: "User registered successfully",
       data: result,
     });
   } catch (error: any) {
@@ -70,7 +70,7 @@ const loginUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Logged in successful!",
+      message: "Login successful",
       data: {
         refresh_token: result?.refreshToken,
         access_token: result?.accessToken,

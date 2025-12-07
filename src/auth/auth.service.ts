@@ -47,13 +47,13 @@ const loginUser = async (email: string, password: string) => {
   const accessToken = jwt.sign(
     { id: user.id, name: user.name, role: user.role },
     process.env.ACCESS_TOKEN_SECRET!,
-    { expiresIn: "5m" }
+    { expiresIn: "7d" }
   );
 
   const refreshToken = jwt.sign(
     { id: user.id, name: user.name, role: user.role },
     process.env.REFRESH_TOKEN_SECRET!,
-    { expiresIn: "5m" }
+    { expiresIn: "7d" }
   );
 
   return { accessToken, refreshToken, user };

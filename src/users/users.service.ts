@@ -23,7 +23,30 @@ const deleteUser = async (id: number) => {
   return users;
 };
 
+const updateUserProfile = async (
+  userId: number,
+  updates: Record<string, any>
+) => {
+  const keys = Object.keys(updates);
+  const values = Object.values(updates);
+
+  if (keys.length === 0) return null;
+
+  const setString = keys.map((key, i) => `${key} = $${i + 1}`).join(",");
+  const result = await pool.query(
+    `
+    UPDATE users
+    SET ${setString},
+    WHERE id = $${keys.length + 1}
+    RETURNING * 
+    `,
+    [...values, userId]
+  );
+  return result;
+};
+
 export const usersServices = {
   getAllUsers,
   deleteUser,
+  updateUserProfile,
 };

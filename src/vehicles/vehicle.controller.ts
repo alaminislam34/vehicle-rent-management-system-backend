@@ -40,7 +40,7 @@ const createVehicles = async (req: Request, res: Response) => {
 
   res.status(201).json({
     success: true,
-    message: "Vehicle created successful!",
+    message: "Vehicle created successfully",
     data: vehicle,
   });
 };
@@ -51,8 +51,9 @@ const getAllVehicles = async (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message:
-      vehicles.length > 0 ? "Vehicles get successful!" : "No vehicles found!",
-    data: vehicles,
+      vehicles.length > 0 ? "Vehicles retrieved successfully" : "No vehicles found!",
+    vehicles_count: vehicles.length,
+    vehicles: vehicles,
   });
 };
 
@@ -75,7 +76,7 @@ const getOneVehicles = async (req: Request, res: Response) => {
     }
     res.status(200).json({
       success: true,
-      message: "Vehicles get successful!",
+      message: "Vehicle retrieved successfully",
       data: vehicle,
     });
   } catch (error: any) {
@@ -106,7 +107,7 @@ const deleteOneVehicles = async (req: Request, res: Response) => {
     }
     res.status(200).json({
       success: true,
-      message: "Vehicle deleted successful!",
+      message: "Vehicle deleted successfully",
     });
   } catch (error: any) {
     return res.status(500).json({
@@ -126,11 +127,11 @@ const updateOneVehicles = async (req: Request, res: Response) => {
       .status(400)
       .json({ success: false, message: "Invalid vehicle ID" });
   }
-  if(!["available", "booked"].includes(availability_status)){
+  if (!["available", "booked"].includes(availability_status)) {
     return res.status(400).json({
-        success:true, 
-        message: "Invalid availability status!"
-    })
+      success: true,
+      message: "Invalid availability status!",
+    });
   }
   try {
     const vehicles = await vehiclesServices.updateOneVehicle(
@@ -148,7 +149,7 @@ const updateOneVehicles = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Vehicle updated successful!",
+      message: "Vehicle updated successfully",
       data: vehicles.rows[0],
     });
   } catch (error: any) {
