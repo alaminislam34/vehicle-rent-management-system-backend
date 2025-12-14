@@ -15,7 +15,7 @@ const createUser = async (
     INSERT INTO 
     users(name, email, password, phone, role) 
     VALUES($1, $2, $3, $4, $5) 
-    RETURNING *
+    RETURNING id, name, email, phone, role
     `,
     [name, email, hashedPassword, phone, role]
   );
@@ -50,13 +50,7 @@ const loginUser = async (email: string, password: string) => {
     { expiresIn: "7d" }
   );
 
-  const refreshToken = jwt.sign(
-    { id: user.id, name: user.name, role: user.role },
-    process.env.REFRESH_TOKEN_SECRET!,
-    { expiresIn: "7d" }
-  );
-
-  return { accessToken, refreshToken, user };
+  return { accessToken, user };
 };
 
 export const authServices = {

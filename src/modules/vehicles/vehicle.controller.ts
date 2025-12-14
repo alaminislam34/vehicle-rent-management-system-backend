@@ -51,9 +51,10 @@ const getAllVehicles = async (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message:
-      vehicles.length > 0 ? "Vehicles retrieved successfully" : "No vehicles found!",
-    vehicles_count: vehicles.length,
-    vehicles: vehicles,
+      vehicles.length > 0
+        ? "Vehicles retrieved successfully"
+        : "No vehicles found!",
+    data: vehicles,
   });
 };
 

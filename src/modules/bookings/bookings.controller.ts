@@ -44,10 +44,6 @@ const getAllBookings = async (req: Request, res: Response) => {
           : req.user?.role === "customer"
           ? "Your bookings retrieved successfully"
           : "No bookings found",
-      total_bookings:
-        req.user?.role === "admin"
-          ? admin_bookings.length
-          : customer_bookings.length,
       data: req.user?.role === "admin" ? admin_bookings : customer_bookings,
     });
   } catch (error: any) {

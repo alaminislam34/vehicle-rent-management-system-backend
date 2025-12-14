@@ -4,7 +4,9 @@ import { pool } from "../../models/db";
 const getAllUsers = async () => {
   const users = await pool.query(
     `
-        SELECT * FROM users
+        SELECT id, name, email, phone, role
+        FROM users
+        ORDER BY id ASC 
         `
   );
   return users.rows;
@@ -23,7 +25,7 @@ const deleteUser = async (id: number) => {
   return users;
 };
 
-export const updateUserProfile = async (
+const updateUserProfile = async (
   userId: number,
   updates: Record<string, any>
 ) => {
@@ -39,7 +41,7 @@ export const updateUserProfile = async (
     UPDATE users
     SET ${setString}
     WHERE id = $${keys.length + 1}
-    RETURNING *
+    RETURNING id, name, email, phone, role
     `,
     [...values, userId]
   );

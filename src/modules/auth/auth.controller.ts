@@ -72,9 +72,14 @@ const loginUser = async (req: Request, res: Response) => {
       success: true,
       message: "Login successful",
       data: {
-        refresh_token: result?.refreshToken,
-        access_token: result?.accessToken,
-        user: result?.user,
+        token: result?.accessToken,
+        user: {
+          id: result?.user.id,
+          name: result?.user.name,
+          email: result?.user.email,
+          phone: result?.user.phone,
+          role: result?.user.role,
+        },
       },
     });
   } catch (error: any) {

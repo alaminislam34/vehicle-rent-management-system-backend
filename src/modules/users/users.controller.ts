@@ -9,7 +9,6 @@ const getAllUsers = async (req: Request, res: Response) => {
       success: true,
       message:
         result.length > 0 ? "Users retrieved successfully" : "Users not found!",
-      total_users: result.length,
       users: result,
     });
   } catch (error: any) {
@@ -60,12 +59,10 @@ const updateUserProfile = async (req: Request, res: Response) => {
     return res.status(403).json({ success: false, message: "Forbidden" });
   }
   if (req.user.role === "customer" && role) {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message: "Permission denied: only admins can update user roles.",
-      });
+    return res.status(403).json({
+      success: false,
+      message: "Permission denied: only admins can update user roles.",
+    });
   }
   try {
     const updates: Record<string, any> = {};

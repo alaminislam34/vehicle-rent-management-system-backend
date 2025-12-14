@@ -171,6 +171,7 @@ const createBooking = async (req: Request) => {
 const udpateBooking = async (req: Request) => {
   const { status } = req.body;
   const id = Number(req.params.bookingId);
+
   if (isNaN(id)) {
     throw new Error("Invalid id");
   }
