@@ -7,7 +7,6 @@ import { usersRoutes } from "./modules/users/users.routes";
 import { bookinsRoutes } from "./modules/bookings/bookings.routes";
 import cors from "cors";
 import { vehiclesRoutes } from "./modules/vehicles/vehicle.routes";
-import cron from "node-cron";
 
 const app = express();
 dotenv.config();
@@ -53,50 +52,6 @@ app.use((err: any, req: Request, res: Response, next: any) => {
   });
 });
 
-// // auto returned update
-// const autoReturnService = async () => {
-//   try {
-//     console.log("Auto return service running...");
-//     const query = `
-//       UPDATE bookings
-//       SET status = 'returned'
-//       WHERE rent_end_date < NOW()
-//       AND status != 'returned'
-//       RETURNING *;
-//     `;
-
-//     const result = await pool.query(query);
-
-//     return {
-//       updated: result.rowCount,
-//       rows: result.rows,
-//     };
-//   } catch (error) {
-//     console.error("Auto return error (service):", error);
-//   }
-// };
-// const autoReturnController = async () => {
-//   try {
-//     console.log("Auto return controller called");
-
-//     const result = await autoReturnService();
-
-//     console.log("Auto return completed:", result);
-
-//     return result;
-//   } catch (error) {
-//     console.error("Auto return error (controller):", error);
-//   }
-// };
-
-// export const autoReturnJob = cron.schedule("*/5 * * * *", async () => {
-//   try {
-//     await autoReturnController();
-//   } catch (err: any) {
-//     throw new Error(err?.message);
-//   }
-// });
-// autoReturnJob.start();
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}.........`);
 });
