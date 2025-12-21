@@ -1,56 +1,64 @@
 import { pool } from "../../models/db";
 
-// get all users
 const getAllUsers = async () => {
-  const users = await pool.query(
+  const result = await pool.query(
     `
-        SELECT id, name, email, phone, role
-        FROM users
-        ORDER BY id ASC 
-        `
+    SELECT id, full_name, username, email, phone, gender, profile_pic, is_verified, created_at
+    FROM users
+    ORDER BY created_at DESC
+    `
   );
-  return users.rows;
+  return result.rows;
 };
 
-// delete user
-const deleteUser = async (id: number) => {
-  const users = await pool.query(
+const getUser = async (id) => {
+  const result = await pool.query(
+    `
+    SELECT id, full_name, username, email, phone, gender, profile_pic, is_verified, created_at
+    FROM users
+    where id = ${id}
+    `
+  );
+  return result.rows;
+};
+
+const deleteUser = async (id: string | number) => {
+  const result = await pool.query(
     `
     DELETE FROM users 
     WHERE id = $1
-    RETURNING *
+    RETURNING id, full_name, email
     `,
     [id]
   );
-  return users;
-};
 
-const updateUserProfile = async (
-  userId: number,
-  updates: Record<string, any>
-) => {
-  const keys = Object.keys(updates);
+  return result.rows[0];
+};
+const updateUserProfile = async (userId: string | number, updates: any) => {
+  const fields = Object.keys(updates);
   const values = Object.values(updates);
 
-  if (keys.length === 0) return null;
+  if (fields.length === 0) return null;
 
-  const setString = keys.map((key, i) => `${key} = $${i + 1}`).join(", ");
+  const setClause = fields
+    .map((field, index) => `${field} = $${index + 1}`)
+    .join(", ");
 
   const result = await pool.query(
     `
-    UPDATE users
-    SET ${setString}
-    WHERE id = $${keys.length + 1}
-    RETURNING id, name, email, phone, role
+    UPDATE users 
+    SET ${setClause} 
+    WHERE id = $${fields.length + 1} 
+    RETURNING id, full_name, username, bio, hometown, work, education, profile_pic, cover_pic
     `,
     [...values, userId]
   );
 
-  return result;
+  return result.rows[0];
 };
-
 export const usersServices = {
   getAllUsers,
   deleteUser,
   updateUserProfile,
+  getUser,
 };

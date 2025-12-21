@@ -3,10 +3,16 @@ import { authController } from "./auth.controller";
 
 const router = express.Router();
 
-// Register new user account
-router.post("/signup", authController.createuser);
+router.post("/signup", authController.registerUser);
 
-// Login and receive JWT token
 router.post("/signin", authController.loginUser);
+
+router.post("/logout", authController.logoutUser);
+
+router.post("/refresh-token", authController.refreshToken);
+
+router.post("/verify-otp", authController.verifyOTPAndLogin);
+
+router.post("/resend-otp", authController.resendOTP);
 
 export const authRoutes = router;

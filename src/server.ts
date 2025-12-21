@@ -1,57 +1,123 @@
-import express, { Request, Response } from "express";
-import { authRoutes } from "./modules/auth/auth.routes";
-import config from "./config";
-import { initDB, pool } from "./models/db";
+/**
+ * Load environment variables FIRST
+ */
 import dotenv from "dotenv";
+dotenv.config();
+
+/**
+ * Core imports
+ */
+import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+
+/**
+ * App modules
+ */
+import config from "./config";
+import { initDB } from "./models/db";
+import { authRoutes } from "./modules/auth/auth.routes";
 import { usersRoutes } from "./modules/users/users.routes";
 import { bookinsRoutes } from "./modules/bookings/bookings.routes";
-import cors from "cors";
 import { vehiclesRoutes } from "./modules/vehicles/vehicle.routes";
 
 const app = express();
-dotenv.config();
 
-app.use(express.json());
+/**
+ * Process-level safety
+ */
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION:", reason);
+});
+
+/**
+ * Middleware
+ */
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+/**
+ * CORS (SAFE & MODERN)
+ * app.options("*") REMOVED — Express handles preflight automatically
+ */
+const allowedOrigins = ["http://localhost:3000"];
+
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin(origin, callback) {
+      // allow REST tools like Postman
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("CORS not allowed"), false);
+    },
     credentials: true,
   })
 );
 
-// db connect
-initDB();
+/**
+ * Database connection
+ */
+(async () => {
+  try {
+    await initDB();
+    console.log("Database connected");
+  } catch (err) {
+    console.error("Database connection failed:", err);
+    process.exit(1);
+  }
+})();
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello word");
-});
-
-app.get("/favicon.ico", (req: Request, res: Response) => res.status(204).end());
-
-//* auth CRUD
-app.use("/api/v1/auth", authRoutes);
-
-//* vehicles CRUD
-app.use("/api/v1/vehicles", vehiclesRoutes);
-
-// * users CRUD
-app.use("/api/v1/users", usersRoutes);
-
-//* bookings CRUD
-app.use("/api/v1/bookings", bookinsRoutes);
-
-app.use((req: Request, res: Response) => {
-  res.status(404).send({ message: "Route Not Found" });
-});
-
-app.use((err: any, req: Request, res: Response, next: any) => {
-  console.error(err.stack);
-  res.status(err.status || 500).send({
-    message: err.message || "Something went wrong on the server",
+/**
+ * Health check
+ */
+app.get("/", (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is running",
   });
 });
 
-app.listen(config.port, () => {
-  console.log(`Server is running on port ${config.port}.........`);
+/**
+ * Routes
+ */
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", usersRoutes);
+app.use("/api/v1/vehicles", vehiclesRoutes);
+app.use("/api/v1/bookings", bookinsRoutes);
+
+/**
+ * 404 handler
+ */
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
+/**
+ * Global error handler
+ */
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("ERROR:", err);
+
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+
+/**
+ * Start server
+ */
+const PORT = config.port || 5000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
