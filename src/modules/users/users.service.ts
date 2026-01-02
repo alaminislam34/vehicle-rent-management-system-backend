@@ -11,15 +11,18 @@ const getAllUsers = async () => {
   return result.rows;
 };
 
-const getUser = async (id) => {
+const getUserById = async (id: number) => {
   const result = await pool.query(
     `
-    SELECT id, full_name, username, email, phone, gender, profile_pic, is_verified, created_at
+    SELECT id, full_name, username, email, phone, gender, profile_pic,
+           is_verified, created_at
     FROM users
-    where id = ${id}
-    `
+    WHERE id = $1
+    `,
+    [id]
   );
-  return result.rows;
+
+  return result.rows[0];
 };
 
 const deleteUser = async (id: string | number) => {
@@ -60,5 +63,5 @@ export const usersServices = {
   getAllUsers,
   deleteUser,
   updateUserProfile,
-  getUser,
+  getUserById,
 };

@@ -19,10 +19,13 @@ export const initDB = async () => {
       password VARCHAR(255) NOT NULL,
       gender VARCHAR(20) CHECK (gender IN ('Male', 'Female', 'Other')),
       date_of_birth DATE,
-      profile_pic VARCHAR(255) DEFAULT 'default_avatar.png',
+      profile_pic VARCHAR(255) DEFAULT 'https://i.ibb.co.com/Y78QRTvM/user.png',
       otp_code VARCHAR(10),
       cover_pic VARCHAR(255),
       bio TEXT,
+      hometown VARCHAR(100),
+      work VARCHAR(100),
+      education VARCHAR(150),
       is_verified BOOLEAN DEFAULT FALSE,
       is_online BOOLEAN DEFAULT FALSE,
       last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -78,7 +81,7 @@ export const initDB = async () => {
       follower_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       following_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (follower_id, following_id) -- একজন আরেকজনকে একবারই ফলো করতে পারবে
+      PRIMARY KEY (follower_id, following_id) 
     );
   `);
 

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { usersServices } from "./users.service";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 // get all users
 const getAllUsers = async (req: Request, res: Response) => {
@@ -21,17 +22,23 @@ const getAllUsers = async (req: Request, res: Response) => {
 
 const getUser = async (req: Request, res: Response) => {
   try {
-    const users = await usersServices.getAllUsers();
-
-    res.status(200).json({
+    const id: number = req.user!.id;
+    const user = await usersServices.getUserById(id);
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    return res.status(200).json({
       success: true,
-      message: "Users fetched successfully",
-      data: users,
+      message: "User fetched successfully",
+      user: user,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(401).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message: "Invalid or expired token",
     });
   }
 };
@@ -65,7 +72,7 @@ const deleteUser = async (req: Request, res: Response) => {
 
 const updateProfile = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.cookies.accessToken;
     const profileData = req.body;
 
     if (!userId) {
@@ -91,4 +98,5 @@ export const usersControllers = {
   getAllUsers,
   deleteUser,
   updateProfile,
+  getUser,
 };

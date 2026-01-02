@@ -7,7 +7,6 @@ const registerUser = async (req: Request, res: Response) => {
   try {
     const { full_name, username, email, phone, password } = req.body;
 
-    // ১. ভ্যালিডেশন (username চেক যোগ করা হয়েছে)
     if (!full_name || !username || !password || (!email && !phone)) {
       return res.status(400).json({
         success: false,
@@ -15,7 +14,6 @@ const registerUser = async (req: Request, res: Response) => {
       });
     }
 
-    // ২. ডুপ্লিকেট চেক
     const checkUser = await pool.query(
       "SELECT * FROM users WHERE email = $1 OR phone = $2 OR username = $3",
       [email || null, phone || null, username]
@@ -27,24 +25,36 @@ const registerUser = async (req: Request, res: Response) => {
         .json({ success: false, message: "User or Username already exists!" });
     }
 
-    // ৩. ইউজার তৈরি
-    const result = await authServices.createUser(req.body);
+    const { accessToken, refreshToken, user } = await authServices.createUser(
+      req.body
+    );
 
-    // ৪. ইমেইল পাঠানো (Async ইমেইল পাঠানোর সময় await ব্যবহার করা ভালো)
-    if (result && email) {
-      // try-catch এর ভেতর রাখা নিরাপদ যাতে ইমেইল এররের জন্য রেজিস্ট্রেশন না আটকায়
-      sendEmail(email, result.otp_code).catch((err) =>
+    if (user && email) {
+      sendEmail(email, user.otp_code).catch((err) =>
         console.log("Email error:", err)
       );
     }
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 5 * 60 * 1000,
+    });
 
     res.status(201).json({
       success: true,
       message: "User registered successfully. Please verify your email.",
       data: {
-        id: result.id,
-        full_name: result.full_name,
-        email: result.email,
+        id: user.id,
+        full_name: user.full_name,
+        email: user.email,
       },
     });
   } catch (error: any) {
@@ -70,6 +80,7 @@ const loginUser = async (req: Request, res: Response) => {
       sameSite: "strict",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
+
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
